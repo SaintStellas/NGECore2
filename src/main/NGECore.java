@@ -55,6 +55,7 @@ import services.ConnectionService;
 import services.EntertainmentService;
 import services.EquipmentService;
 import services.GroupService;
+import services.InstanceService;
 import services.LoginService;
 import services.MissionService;
 import services.PlayerService;
@@ -163,6 +164,7 @@ public class NGECore {
 	public SpawnService spawnService;
 	public AIService aiService;
 	//public MissionService missionService;
+	public InstanceService instanceService;
 	
 	// Login Server
 	public NetworkDispatch loginDispatch;
@@ -326,10 +328,10 @@ public class NGECore {
 		terrainService.addPlanet(14, "kashyyyk_hunting", "terrain/kashyyyk_hunting.trn", true);
 		terrainService.addPlanet(15, "kashyyyk_north_dungeons", "terrain/kashyyyk_north_dungeons.trn", true);
 		terrainService.addPlanet(16, "kashyyyk_rryatt_trail", "terrain/kashyyyk_rryatt_trail.trn", true);
-		terrainService.addPlanet(17, "kashyyyk_south_dungeons", "terrain/kashyyyk_south_dungeons.trn", true);
+		terrainService.addPlanet(17, "kashyyyk_south_dungeons", "terrain/kashyyyk_south_dungeons.trn", true);*/
 		terrainService.addPlanet(18, "adventure1", "terrain/adventure1.trn", true);
 		terrainService.addPlanet(19, "adventure2", "terrain/adventure2.trn", true);
-		terrainService.addPlanet(20, "dungeon1", "terrain/dungeon1.trn", true);*/
+		terrainService.addPlanet(20, "dungeon1", "terrain/dungeon1.trn", true);
 		//Space Zones
 		// NOTE: Commented out for now until space is implemented. No need to be loaded into memory when space is not implemented.
 		/*terrainService.addPlanet(21, "space_corellia", "terrain/space_corellia.trn", true);
@@ -392,6 +394,9 @@ public class NGECore {
 		zoneDispatch.addService(tradeService);
 		
 		zoneDispatch.addService(skillService);
+		
+		instanceService = new InstanceService(this);
+		zoneDispatch.addService(instanceService);
 		
 		//travelService.startShuttleSchedule();
 		

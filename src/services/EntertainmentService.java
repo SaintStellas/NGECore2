@@ -422,6 +422,65 @@ public class EntertainmentService implements INetworkDispatch {
 		
 	}
 	
+	public void startSpectating(final CreatureObject spectator, final CreatureObject performer) {
+		final ScheduledFuture<?> spectatorTask = scheduler.scheduleAtFixedRate(new Runnable() {
+
+			@Override
+			public void run() {
+				if (spectator.getPosition().getDistance2D(performer.getWorldPosition()) > (float) 70) {
+
+					if(((performer.getPerformanceType()) ? "dance" : "music").equals("dance")) {
+						spectator.setPerformanceWatchee(null);
+						spectator.sendSystemMessage("You stop watching " + performer.getCustomName() + " because " + performer.getCustomName()
+								+ " is out of range.", (byte) 0);
+					}
+					else {
+						spectator.setPerformanceListenee(null);
+						spectator.sendSystemMessage("You stop listening to " + performer.getCustomName() + " because " + performer.getCustomName()
+								+ " is out of range.", (byte) 0);
+					}
+					spectator.setMoodAnimation("neutral");
+					performer.removeAudience(spectator);
+
+					spectator.getSpectatorTask().cancel(true);
+				}
+			}
+
+		}, 2, 2, TimeUnit.SECONDS);
+
+		spectator.setSpectatorTask(spectatorTask);
+	}
+	
+	public void performFlourish(final CreatureObject performer, int flourish) {
+
+		if (performer.getFlourishCount() > 0) {
+			performer.sendSystemMessage("@performance:wait_flourish_self", (byte) 0);
+			return;
+		}
+		Performance performance = getPerformanceByIndex(performer.getPerformanceId());
+
+		if(performance == null)
+			return;
+
+		String anmFlo = "skill_action_" + flourish;
+
+		if (flourish == 9)
+			anmFlo = "mistake";
+		
+		performer.setFlourishCount(1);
+		performer.sendSystemMessage("@performance:flourish_perform", (byte) 0);
+		performer.doSkillAnimation(anmFlo);
+
+		scheduler.schedule(new Runnable() {
+
+			@Override
+			public void run() {
+				performer.setFlourishCount(0);
+			}
+
+		}, (long) performance.getLoopDuration(), TimeUnit.SECONDS);
+	}
+
 	@Override
 	public void shutdown() {
 
